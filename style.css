@@ -1,0 +1,18 @@
+
+body {
+    margin: 0;
+    font-family: 'Courier New', monospace;
+    background: #ffe8f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+#game-container {
+    text-align: center;
+}
+#knitCount {
+    margin-top: 10px;
+    font-size: 20px;
+    color: #444;
+}
