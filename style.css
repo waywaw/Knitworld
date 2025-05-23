@@ -2,29 +2,22 @@
 body {
     margin: 0;
     overflow: hidden;
-    background-color: #ffe8f0;
+    background: linear-gradient(to bottom, #fff0f5, #e6e6fa);
     font-family: 'Courier New', monospace;
 }
-#parallax .layer {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-repeat: repeat-x;
-}
-#layer1 { background-image: url('layer1.png'); z-index: 1; }
-#layer2 { background-image: url('layer2.png'); z-index: 2; }
-#layer3 { background-image: url('layer3.png'); z-index: 3; }
 #gameCanvas {
-    position: relative;
-    z-index: 4;
+    display: block;
+    margin: auto;
+    background: radial-gradient(circle, #fafafa 0%, #fddde6 100%);
+    border: 5px dashed #ffb6c1;
 }
 #ui {
     position: absolute;
     top: 10px;
     left: 10px;
-    z-index: 5;
-    color: #333;
-    background: rgba(255,255,255,0.7);
-    padding: 10px;
-    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 12px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
+    z-index: 10;
 }
