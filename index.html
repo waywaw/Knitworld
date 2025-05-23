@@ -7,9 +7,15 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="game-container">
+    <div id="parallax">
+        <div class="layer" id="layer1"></div>
+        <div class="layer" id="layer2"></div>
+        <div class="layer" id="layer3"></div>
         <canvas id="gameCanvas" width="800" height="600"></canvas>
-        <div id="knitCount">Stitches: 0</div>
+        <div id="ui">
+            <p id="stitchCount">Stitches: 0</p>
+            <button onclick="enterCrochetMode()">Crochet Mode</button>
+        </div>
     </div>
     <script src="script.js"></script>
 </body>
