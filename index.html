@@ -1,17 +1,20 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Knitworld: Stitch by Stitch</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Knitworld Platformer</title>
+    <meta charset="UTF-8" />
+    <style>
+        canvas {
+            background: skyblue;
+            display: block;
+            margin: 0 auto;
+            border: 2px solid #000;
+        }
+    </style>
 </head>
 <body>
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
-    <div id="ui">
-        <p id="stitchCount">Stitches: 0</p>
-        <button onclick="enterCrochetMode()">Crochet Mode</button>
-    </div>
-    <script src="script.js"></script>
+    <canvas id="gameCanvas" width="800" height="400"></canvas>
+    <script src="main.js"></script>
 </body>
 </html>
