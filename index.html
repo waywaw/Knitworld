@@ -1,20 +1,27 @@
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Knitworld Platformer</title>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>Knitworld: Stitch by Stitch</title>
     <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: black;
+        }
         canvas {
-            background: skyblue;
             display: block;
-            margin: 0 auto;
-            border: 2px solid #000;
         }
     </style>
 </head>
 <body>
-    <canvas id="gameCanvas" width="800" height="400"></canvas>
+    <canvas id="gameCanvas"></canvas>
+    <audio id="ambient" loop autoplay>
+        <source src="ambient.mp3" type="audio/mpeg">
+    </audio>
     <script src="main.js"></script>
 </body>
 </html>
