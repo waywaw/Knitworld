@@ -1,167 +1,160 @@
-
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 let gameOver = false;
 let yarnAmount = 100;
-let stitches = [];
-let rowColors = [];
-const stitchSize = 6;
-const stitchesPerRow = 40;
-const maxRows = 40;
-
-const colors = ["hotpink", "lightblue", "gold", "limegreen", "orange", "violet", "tomato"];
+let stitches = 0;
+let maxStitches = 1000;
+let complimentGiven = false;
+const compliments = [
+  "That sweater is stunning!",
+  "Did you knit that yourself? Incredible.",
+  "I love your sweater — it looks handmade.",
+  "You have great taste in yarn.",
+  "That colorwork is beautiful!"
+];
 
 let player = {
-    x: 120,
-    y: canvas.height / 2,
-    dy: 0,
-    gravity: 1.2,
-    jumpPower: -16,
-    radius: 20,
-    unravel: 100,
-    color: "hotpink"
+  x: 120,
+  y: canvas.height / 2,
+  dy: 0,
+  gravity: 1.2,
+  jumpPower: -16,
+  radius: 20,
+  color: "hotpink"
 };
 
-let yarnBalls = [];
-
-function spawnYarn() {
-    const y = Math.random() * (canvas.height - 60) + 30;
-    const color = colors[Math.floor(Math.random() * colors.length)];
-    yarnBalls.push({ x: canvas.width + 60, y, radius: 10, color });
-}
-
-function addStitch(color) {
-    if (rowColors.length >= maxRows) return;
-    let currentRow = stitches.length % stitchesPerRow;
-    stitches.push({ x: currentRow, y: Math.floor(stitches.length / stitchesPerRow), color });
-    if (currentRow === stitchesPerRow - 1) {
-        rowColors.push(color);
-    }
-}
-
-document.addEventListener("keydown", (e) => {
-    if (e.code === "Space") player.dy = player.jumpPower;
-    if (e.code === "ArrowLeft") player.x -= 10;
-    if (e.code === "ArrowRight") player.x += 10;
-});
-
-document.addEventListener("touchstart", (e) => {
-    const touchX = e.touches[0].clientX;
-    if (touchX < canvas.width / 2) player.x -= 10;
-    else player.x += 10;
-    player.dy = player.jumpPower;
-});
-
-function update() {
-    if (player.unravel <= 0) {
-        endGame("You ran out of yarn!");
-        return;
-    }
-    if (rowColors.length >= maxRows) {
-        endGame("Sweater complete! Beautiful work.");
-        return;
-    }
-
-    player.dy += player.gravity;
-    player.y += player.dy;
-    if (player.y + player.radius > canvas.height) {
-        player.y = canvas.height - player.radius;
-        player.dy = 0;
-    }
-
-    if (player.x > canvas.width * 0.75) player.x = canvas.width * 0.75;
-    if (player.x < 50) player.x = 50;
-
-    player.unravel -= 0.02;
-
-    yarnBalls.forEach(ball => ball.x -= 2);
-    yarnBalls = yarnBalls.filter(ball => ball.x > -20);
-
-    for (let i = yarnBalls.length - 1; i >= 0; i--) {
-        const ball = yarnBalls[i];
-        const dx = player.x - ball.x;
-        const dy = player.y - ball.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < player.radius + ball.radius) {
-            player.unravel = Math.min(100, player.unravel + 10);
-            player.color = ball.color;
-            addStitch(ball.color);
-            yarnBalls.splice(i, 1);
-        }
-    }
-
-    if (Math.random() < 0.02) spawnYarn();
-}
-
 function drawSweater() {
-    const offsetX = 200;
-    const offsetY = 160;
-    stitches.forEach(stitch => {
-        ctx.fillStyle = stitch.color;
-        ctx.fillRect(offsetX + stitch.x * stitchSize, offsetY + stitch.y * stitchSize, stitchSize, stitchSize);
-    });
+  const centerX = canvas.width / 2;
+  const topY = 180;
+  const width = 120;
+  const height = 160;
+  const progress = Math.min(1, stitches / maxStitches);
+
+  ctx.fillStyle = player.color;
+  ctx.beginPath();
+  ctx.moveTo(centerX - 30, topY);
+  ctx.lineTo(centerX + 30, topY);
+  ctx.lineTo(centerX + 60, topY + height * progress);
+  ctx.lineTo(centerX - 60, topY + height * progress);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.moveTo(centerX - 30, topY);
+  ctx.lineTo(centerX - 80, topY + height * 0.5 * progress);
+  ctx.lineTo(centerX - 70, topY + height * 0.5 * progress);
+  ctx.lineTo(centerX - 30, topY + 20);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.moveTo(centerX + 30, topY);
+  ctx.lineTo(centerX + 80, topY + height * 0.5 * progress);
+  ctx.lineTo(centerX + 70, topY + height * 0.5 * progress);
+  ctx.lineTo(centerX + 30, topY + 20);
+  ctx.closePath();
+  ctx.fill();
+
+  if (progress === 1) {
+    ctx.fillStyle = "#444";
+    ctx.fillRect(centerX - 60, topY + height, 120, 6);
+    ctx.fillRect(centerX - 80, topY + height * 0.5, 10, 6);
+    ctx.fillRect(centerX + 70, topY + height * 0.5, 10, 6);
+    ctx.beginPath();
+    ctx.arc(centerX, topY, 10, 0, Math.PI * 2);
+    ctx.fill();
+  }
 }
 
 function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Yarn meter
-    ctx.strokeStyle = "#aaa";
-    ctx.strokeRect(20, 20, 120, 10);
-    ctx.fillStyle = "#fff";
-    ctx.fillRect(20, 20, (player.unravel / 100) * 120, 10);
+  ctx.strokeStyle = "#aaa";
+  ctx.strokeRect(20, 20, 120, 10);
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(20, 20, (yarnAmount / 100) * 120, 10);
 
-    // Knitting needles
-    ctx.fillStyle = "silver";
-    ctx.fillRect(180, 100 + Math.sin(Date.now() / 200) * 3, 10, 60);
-    ctx.fillRect(220, 100 - Math.sin(Date.now() / 200) * 3, 10, 60);
+  ctx.save();
+  ctx.translate(180, 120);
+  ctx.rotate(-0.3);
+  ctx.fillStyle = "silver";
+  ctx.fillRect(-5, 0, 10, 60);
+  ctx.restore();
 
-    // Sweater
-    drawSweater();
+  ctx.save();
+  ctx.translate(240, 120);
+  ctx.rotate(0.3);
+  ctx.fillStyle = "silver";
+  ctx.fillRect(-5, 0, 10, 60);
+  ctx.restore();
 
-    // Yarn balls
-    yarnBalls.forEach(ball => {
-        ctx.beginPath();
-        ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-        ctx.fillStyle = ball.color;
-        ctx.fill();
-    });
+  ctx.beginPath();
+  ctx.moveTo(player.x, player.y);
+  ctx.lineTo(canvas.width / 2, 180);
+  ctx.strokeStyle = player.color;
+  ctx.lineWidth = 4;
+  ctx.stroke();
 
-    // Yarn ball character
-    ctx.beginPath();
-    ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
-    ctx.fillStyle = player.color;
-    ctx.fill();
+  drawSweater();
+
+  ctx.beginPath();
+  ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
+  ctx.fillStyle = player.color;
+  ctx.fill();
 }
 
+function update() {
+  if (gameOver) return;
+  player.dy += player.gravity;
+  player.y += player.dy;
+  if (player.y + player.radius > canvas.height) {
+    player.y = canvas.height - player.radius;
+    player.dy = 0;
+  }
+  if (stitches >= maxStitches && !complimentGiven) {
+    complimentGiven = true;
+    endGame(compliments[Math.floor(Math.random() * compliments.length)]);
+  }
+  yarnAmount -= 0.01;
+  if (yarnAmount <= 0) endGame("You ran out of yarn!");
+}
+
+document.addEventListener("keydown", (e) => {
+  if (e.code === "Space") {
+    player.dy = player.jumpPower;
+    stitches += 5;
+  }
+  if (e.code === "ArrowLeft") player.x -= 10;
+  if (e.code === "ArrowRight") player.x += 10;
+});
+
+document.addEventListener("touchstart", () => {
+  player.dy = player.jumpPower;
+  stitches += 5;
+});
+
 function loop() {
-    if (!gameOver) {
-        update();
-        draw();
-        requestAnimationFrame(loop);
-    }
+  update();
+  draw();
+  requestAnimationFrame(loop);
 }
 
 function endGame(message) {
-    gameOver = true;
-    const overlay = document.getElementById("gameOver");
-    document.getElementById("gameMessage").textContent = message;
-    overlay.style.display = "flex";
+  gameOver = true;
+  document.getElementById("gameMessage").textContent = message;
+  document.getElementById("gameOver").style.display = "flex";
 }
 
 function restartGame() {
-    gameOver = false;
-    stitches = [];
-    rowColors = [];
-    player.unravel = 100;
-    player.color = "hotpink";
-    player.x = 120;
-    yarnBalls = [];
-    document.getElementById("gameOver").style.display = "none";
-    loop();
+  gameOver = false;
+  stitches = 0;
+  complimentGiven = false;
+  yarnAmount = 100;
+  document.getElementById("gameOver").style.display = "none";
+  loop();
 }
 
 loop();
